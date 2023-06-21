@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def greet():
-    return render_template('personal_site.html')
+    return render_template('index.html')
 
 
 if __name__ == "__main__":
