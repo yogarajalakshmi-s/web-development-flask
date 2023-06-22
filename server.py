@@ -1,48 +1,41 @@
 from flask import Flask, render_template
-import random
-from datetime import datetime
+import requests
+
 
 app = Flask(__name__)
 
 
-# Rendering HTML elements through decorators
-def make_bold(function):
-    def wrapper_function():
-        return f"<b>{function()}</b>"
-    return wrapper_function
+@app.route('/')
+def greet():
+    return 'Hello! Go to /guess and play the guess game'
 
 
-@app.route('/')  # Decorator to print Hello World! only when it's in home page
-def hello_world():
-    # Adding HTML elements
-    return '<h1 style="text-align: center">Hello World!</h1>' \
-           '<p>A paragraph</p>' \
-           '<img src="https://media.istockphoto.com/id/1035676256/photo/background-of-galaxy-and-stars.jpg?s=612x612&w=0&k=20&c=dh7eWJ6ovqnQZ9QwQQlq2wxqmAR7mgRlQTgaIylgBwc=">'
+@app.route('/guess')
+def guess_greet():
+    return 'Add any name to the current url'
 
 
-@app.route('/rendering_html')
-def render_html():
-    return render_template('index.html')  # Note that html files should be templates folder
+@app.route('/guess/<path:name>')
+def guess(name):
+    gender = guess_gender(name)
+    age = guess_age(name)
+    return render_template('index.html', name=name.capitalize(), gender=gender, age=age)
 
 
-@app.route('/bye')
-@make_bold
-def bye():
-    return 'Bye!'
+def guess_gender(name):
+    parameters = {
+        "name": name
+    }
+    response = requests.get(url="https://api.genderize.io", params=parameters)
+    return response.json()['gender']
 
 
-# Creating variable paths and converting paths to a specified datatype
-@app.route('/username/<name>/<int:number>')  # Variable rules - URL <name> will be rendered in the page
-def greet(name, number):
-    return f"Hello {name}! You're {number} years old."
-
-
-# Using jinja template in html files to execute python expressions
-@app.route('/day_57')
-def say_hello_world():
-    random_num = random.randint(1, 10)
-    year = datetime.today().year
-    return render_template('test_1_day_57.html', num=random_num, year=year)
+def guess_age(name):
+    parameters = {
+        "name": name
+    }
+    response = requests.get(url="https://api.agify.io", params=parameters)
+    return response.json()['age']
 
 
 if __name__ == "__main__":
