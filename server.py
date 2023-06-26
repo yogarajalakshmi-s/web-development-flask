@@ -1,58 +1,38 @@
 from flask import Flask, render_template
-import random, requests
-from datetime import datetime
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField, SubmitField, validators
+from flask_bootstrap import Bootstrap
+
+EMAIL = "admin@email.com"
+PASSWORD = "12345678"
+
+class LoginForm(FlaskForm):
+    email = StringField(label='Email', validators=[validators.DataRequired(), validators.Email(message="Invalid Email Address")])
+    password = PasswordField(label='Password', validators=[validators.DataRequired(), validators.Length(min=8, message="Password should contain atleast 8 characters")])
+    submit = SubmitField(label="Sign In")
+
 
 app = Flask(__name__)
+app.secret_key = "The answer to life is 42"  # We need secret key to use CSRF token
+Bootstrap(app)
+
+@app.route("/")
+def home():
+    return render_template('index.html')
 
 
-# Rendering HTML elements through decorators
-def make_bold(function):
-    def wrapper_function():
-        return f"<b>{function()}</b>"
-    return wrapper_function
+@app.route("/login", methods=["GET", "POST"])
+def login_page():
+    login_form = LoginForm()
+    email = login_form.email.data
+    password = login_form.password.data
+    if login_form.validate_on_submit():
+        if email == EMAIL and password == PASSWORD:
+            return render_template('success.html')
+        else:
+            return render_template('denied.html')
+    return render_template('login.html', form=login_form)
 
 
-@app.route('/')  # Decorator to print Hello World! only when it's in home page
-def hello_world():
-    # Adding HTML elements
-    return '<h1 style="text-align: center">Hello World!</h1>' \
-           '<p>A paragraph</p>' \
-           '<img src="https://media.istockphoto.com/id/1035676256/photo/background-of-galaxy-and-stars.jpg?s=612x612&w=0&k=20&c=dh7eWJ6ovqnQZ9QwQQlq2wxqmAR7mgRlQTgaIylgBwc=">'
-
-
-@app.route('/rendering_html')
-def render_html():
-    return render_template('index.html')  # Note that html files should be templates folder
-
-
-@app.route('/bye')
-@make_bold
-def bye():
-    return 'Bye!'
-
-
-# Creating variable paths and converting paths to a specified datatype
-@app.route('/username/<name>/<int:number>')  # Variable rules - URL <name> will be rendered in the page
-def greet(name, number):
-    return f"Hello {name}! You're {number} years old."
-
-
-# Using jinja template in html files to execute python expressions
-@app.route('/day_57')
-def say_hello_world():
-    random_num = random.randint(1, 10)
-    year = datetime.today().year
-    return render_template('test_1_day_57.html', num=random_num, year=year)
-
-
-# Multiline statements with Jinja - see blog.html
-@app.route('/blog/<num>')  # See index.html - url building, num is passed as a parameter
-def get_blog(num):
-    response = requests.get(url=" https://api.npoint.io/c790b4d5cab58020d391")
-    blogs = response.json()
-    return render_template('blog.html', blogs=blogs)
-
-
-if __name__ == "__main__":
-    app.run(debug=True)  # Debug mode on
-
+if __name__ == '__main__':
+    app.run(debug=True)

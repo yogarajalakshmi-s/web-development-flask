@@ -1,13 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>My site</title>
-</head>
-<body>
-    <h1>Hello! Rendering HTML files</h1>
-    <img src="static/albert_einstein.jpg" width="200px">  <!-- css and image files should be in folder "static" -->
-    <img src="{{ url_for('static', filename='albert_einstein.jpg') }}">  <!-- Dynamic URL -->
-    <br/><a href="{{ url_for('get_blog', num=2) }}">Go to Blog</a>  <!-- Day - 57: URL building in blogs, passing parameters to the url -->
-</body>
-</html>
+{% extends 'bootstrap/base.html' %}  <!--  Flask Bootstrap  -->
+{% block title %} Secrets {% endblock %}
+
+{% block content %}
+<div class="jumbotron">
+	<div class="container">
+		<h1>Welcome</h1>
+		<p>Are you ready to discover my secret?</p>
+		<a class="btn btn-primary btn-lg" href="{{ url_for('login_page') }}"><button>Login</button></a>
+	</div>
+</div>
+{% endblock %}
