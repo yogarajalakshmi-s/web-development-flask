@@ -1,13 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>My site</title>
-</head>
-<body>
-    <h1>Hello! Rendering HTML files</h1>
-    <img src="static/albert_einstein.jpg" width="200px">  <!-- css and image files should be in folder "static" -->
-    <img src="{{ url_for('static', filename='albert_einstein.jpg') }}">  <!-- Dynamic URL -->
-    <br/><a href="{{ url_for('get_blog', num=2) }}">Go to Blog</a>  <!-- Day - 57: URL building in blogs, passing parameters to the url -->
-</body>
-</html>
+{% extends 'bootstrap/base.html' %}
+
+{% block title %}Coffee and Wifi{% endblock %}
+
+{% block content %}
+<div class="jumbotron text-center">
+    <div class="container">
+  <h1 class="display-4">☕️ Coffee & Wifi 💻</h1>
+  <p class="lead">Want to work in a cafe but need power and wifi?</p>
+  <hr class="my-4">
+  <p>You've found the right place! Checkout my collection of cafes with data on power socket availability, wifi speed and coffee quality.</p>
+  <a class="btn btn-warning btn-lg" href="{{ url_for('cafes') }}" role="button">Show Me!</a>
+</div>
+    </div>
+
+{% endblock %}

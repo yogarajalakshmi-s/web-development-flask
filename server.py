@@ -1,58 +1,56 @@
-from flask import Flask, render_template
-import random, requests
-from datetime import datetime
+from flask import Flask, render_template, redirect, url_for
+from flask_bootstrap import Bootstrap
+from flask_wtf import FlaskForm
+from wtforms import StringField, SubmitField, SelectField
+from wtforms.validators import DataRequired, URL
+import csv
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
+Bootstrap(app)
 
 
-# Rendering HTML elements through decorators
-def make_bold(function):
-    def wrapper_function():
-        return f"<b>{function()}</b>"
-    return wrapper_function
+class CafeForm(FlaskForm):
+    cafe = StringField('Cafe name', validators=[DataRequired()])
+    location = StringField(validators=[DataRequired(), URL(message="URL is required")])
+    open = StringField("Opening Time", validators=[DataRequired()])
+    close = StringField("Closing Time", validators=[DataRequired()])
+    coffee_rating = SelectField("Coffee Rating", validators=[DataRequired()], choices=["☕️", "☕☕", "☕☕☕", "☕☕☕☕", "☕☕☕☕☕"])
+    wifi_rating = SelectField("Wifi Rating", validators=[DataRequired()], choices=["✘", "💪", "💪💪", "💪💪💪", "💪💪💪💪", "💪💪💪💪💪"])
+    power_rating = SelectField("Power Rating", validators=[DataRequired()], choices=["✘", "🔌", "🔌🔌", "🔌🔌🔌", "🔌🔌🔌🔌", "🔌🔌🔌🔌🔌"])
+    submit = SubmitField('Submit')
 
 
-@app.route('/')  # Decorator to print Hello World! only when it's in home page
-def hello_world():
-    # Adding HTML elements
-    return '<h1 style="text-align: center">Hello World!</h1>' \
-           '<p>A paragraph</p>' \
-           '<img src="https://media.istockphoto.com/id/1035676256/photo/background-of-galaxy-and-stars.jpg?s=612x612&w=0&k=20&c=dh7eWJ6ovqnQZ9QwQQlq2wxqmAR7mgRlQTgaIylgBwc=">'
+@app.route("/")
+def home():
+    return render_template("index.html")
 
 
-@app.route('/rendering_html')
-def render_html():
-    return render_template('index.html')  # Note that html files should be templates folder
+@app.route('/add', methods=["GET", "POST"])
+def add_cafe():
+    form = CafeForm()
+    if form.validate_on_submit():
+        with open("cafe-data.csv", mode="a", encoding="utf8") as csv_file:
+            csv_file.write(f"\n{form.cafe.data},"
+                           f"{form.location.data},"
+                           f"{form.open.data},"
+                           f"{form.close.data},"
+                           f"{form.coffee_rating.data},"
+                           f"{form.wifi_rating.data},"
+                           f"{form.power_rating.data}")
+        return redirect(url_for('cafes'))
+    return render_template('add.html', form=form)
 
 
-@app.route('/bye')
-@make_bold
-def bye():
-    return 'Bye!'
+@app.route('/cafes')
+def cafes():
+    with open('cafe-data.csv', newline='', encoding="utf8") as csv_file:
+        csv_data = csv.reader(csv_file, delimiter=',')
+        list_of_rows = []
+        for row in csv_data:
+            list_of_rows.append(row)
+    return render_template('cafes.html', cafes=list_of_rows)
 
 
-# Creating variable paths and converting paths to a specified datatype
-@app.route('/username/<name>/<int:number>')  # Variable rules - URL <name> will be rendered in the page
-def greet(name, number):
-    return f"Hello {name}! You're {number} years old."
-
-
-# Using jinja template in html files to execute python expressions
-@app.route('/day_57')
-def say_hello_world():
-    random_num = random.randint(1, 10)
-    year = datetime.today().year
-    return render_template('test_1_day_57.html', num=random_num, year=year)
-
-
-# Multiline statements with Jinja - see blog.html
-@app.route('/blog/<num>')  # See index.html - url building, num is passed as a parameter
-def get_blog(num):
-    response = requests.get(url=" https://api.npoint.io/c790b4d5cab58020d391")
-    blogs = response.json()
-    return render_template('blog.html', blogs=blogs)
-
-
-if __name__ == "__main__":
-    app.run(debug=True)  # Debug mode on
-
+if __name__ == '__main__':
+    app.run(debug=True)
