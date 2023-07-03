@@ -35,8 +35,8 @@ A beautiful blog site using Jinja, html, css, bootstrap, sending mail to the use
 **Branch-10: Login form-Intermediate** - https://github.com/yoga-0731/web-development-flask/tree/flask-bootstrap-login.  
 A login page designed with validations using wtforms.
 
-**Branch-11: App maintaining the list of cafes** - https://github.com/yoga-0731/web-development-flask/tree/flask-cafe-project
+**Branch-11: App maintaining the list of cafes** - https://github.com/yoga-0731/web-development-flask/tree/flask-cafe-project.  
 App which has data on the best cafes and has operations to create, read, update and delete cafes.
 
-**Branch-12: Flask login - Advanced** - https://github.com/yoga-0731/web-development-flask/tree/flask-advanced-authentication
+**Branch-12: Flask login - Advanced** - https://github.com/yoga-0731/web-development-flask/tree/flask-advanced-authentication.  
 Advanced login using Flask and SQLAlchemy, tracking every signup and storing it in database and validation in login and signup page.
