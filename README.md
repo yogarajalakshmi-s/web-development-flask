@@ -27,10 +27,10 @@ A simple usage of bootstrap template. (no flask)
 Frontend website using only html, css and bootstrap framework. (no flask)
 
 **Branch-8: Login page** - https://github.com/yoga-0731/web-development-flask/tree/html-forms.  
-A basic level login page built using Jinja templates, html forms, POST request in Flask
+A basic level login page built using Jinja templates, html forms, POST request in Flask  
 
-**Branch-9: Blog site - Intermediate** - https://github.com/yoga-0731/web-development-flask/tree/blog-flask-bootstrap.  
-A beautiful blog site using Jinja, html, css, bootstrap, sending mail to the users filling the contact form.
+**Branch-9: Blog site - Advanced** - https://github.com/yoga-0731/web-development-flask/tree/blog-flask-bootstrap.  
+A beautiful blog site using Jinja, Html, CSS, Bootstrap, SQLAlchemy - tracking all registrations, performing login validations, with CRUD opoerations on blog posts.  
 
 **Branch-10: Login form-Intermediate** - https://github.com/yoga-0731/web-development-flask/tree/flask-bootstrap-login.  
 A login page designed with validations using wtforms.
