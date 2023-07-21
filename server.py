@@ -1,58 +1,59 @@
-from flask import Flask, render_template
-import random, requests
-from datetime import datetime
+from flask import Flask, jsonify
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 
-
-# Rendering HTML elements through decorators
-def make_bold(function):
-    def wrapper_function():
-        return f"<b>{function()}</b>"
-    return wrapper_function
+# Connecting to DB
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///cafes.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
 
 
-@app.route('/')  # Decorator to print Hello World! only when it's in home page
-def hello_world():
-    # Adding HTML elements
-    return '<h1 style="text-align: center">Hello World!</h1>' \
-           '<p>A paragraph</p>' \
-           '<img src="https://media.istockphoto.com/id/1035676256/photo/background-of-galaxy-and-stars.jpg?s=612x612&w=0&k=20&c=dh7eWJ6ovqnQZ9QwQQlq2wxqmAR7mgRlQTgaIylgBwc=">'
+class Cafe(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(250), unique=True, nullable=False)
+    map_url = db.Column(db.String(500), nullable=False)
+    img_url = db.Column(db.String(500), nullable=False)
+    location = db.Column(db.String(250), nullable=False)
+    seats = db.Column(db.String(250), nullable=False)
+    has_toilet = db.Column(db.Boolean, nullable=False)
+    has_wifi = db.Column(db.Boolean, nullable=False)
+    has_sockets = db.Column(db.Boolean, nullable=False)
+    can_take_calls = db.Column(db.Boolean, nullable=False)
+    coffee_price = db.Column(db.String(250), nullable=True)
 
 
-@app.route('/rendering_html')
-def render_html():
-    return render_template('index.html')  # Note that html files should be templates folder
+def create_json_template(cafe):
+    return {"id": cafe.id,
+            "name": cafe.name,
+            "location": cafe.location,
+            "coffee_price": cafe.coffee_price,
+            "seats": cafe.seats,
+            "has_wifi": cafe.has_wifi,
+            "has_sockets": cafe.has_sockets,
+            "has_toilet": cafe.has_toilet,
+            "can_take_calls": cafe.can_take_calls,
+            "map_url": cafe.map_url,
+            "img_url": cafe.img_url
+            }
 
 
-@app.route('/bye')
-@make_bold
-def bye():
-    return 'Bye!'
+@app.route('/')
+def home():
+    return "Hello"
 
 
-# Creating variable paths and converting paths to a specified datatype
-@app.route('/username/<name>/<int:number>')  # Variable rules - URL <name> will be rendered in the page
-def greet(name, number):
-    return f"Hello {name}! You're {number} years old."
+@app.route('/all-cafes')
+def all_cafes():
+    cafes = []
+    all_cafes = db.session.query(Cafe).all()
+    for cafe in all_cafes:
+        print(cafe)
+        cafes.append(create_json_template(cafe))
+    print(cafes)
+    return jsonify(cafes=cafes)
 
 
-# Using jinja template in html files to execute python expressions
-@app.route('/day_57')
-def say_hello_world():
-    random_num = random.randint(1, 10)
-    year = datetime.today().year
-    return render_template('test_1_day_57.html', num=random_num, year=year)
-
-
-# Multiline statements with Jinja - see blog.html
-@app.route('/blog/<num>')  # See index.html - url building, num is passed as a parameter
-def get_blog(num):
-    response = requests.get(url=" https://api.npoint.io/c790b4d5cab58020d391")
-    blogs = response.json()
-    return render_template('blog.html', blogs=blogs)
-
-
-if __name__ == "__main__":
-    app.run(debug=True)  # Debug mode on
+if __name__ == '__main__':
+    app.run(debug=True)
 
