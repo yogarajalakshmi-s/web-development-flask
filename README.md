@@ -1,4 +1,4 @@
-# web-development-flask
+# Python web developement projects using Flask
 This repository contains projects on **Python flask applications** (in branches).  
 Master branch - basic overview of flask app.
 All below applications are developed to run on flask using Python
